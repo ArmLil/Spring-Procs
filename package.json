@@ -1,0 +1,23 @@
+{
+  "name": "spring-procs",
+  "version": "1.0.0",
+  "description": "backend project with Edgar",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ArmLil/Spring-Procs.git"
+  },
+  "author": "Lilit",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ArmLil/Spring-Procs/issues"
+  },
+  "homepage": "https://github.com/ArmLil/Spring-Procs#readme",
+  "dependencies": {
+    "express": "^4.15.2",
+    "sqlite": "^2.5.0"
+  }
+}
