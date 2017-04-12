@@ -9,55 +9,71 @@ const spring = express();
 spring.post('/check-procs', (req, res) => {
 })
 
-const get_row_obj =  (i_row, arr) => {
-  //we need to have the first word of each row for further filtering
-  let str = '', f_word = '', n = i_row;
-  do{
-    f_word += arr[n++];
-  }while(arr[n] !== ' ')
-  do{
-    str += arr[i_row++];//get the row
-  }while(arr[i_row] !== '\n')
-  let result = [++i_row, f_word, str];// i_row is the last index of each row
-  return result;
+const calling = (el, cb) =>{
+  if (typeof cb === "function"){
+    return cb(el);
+  }
+}
+
+const get_first_word = (s) => {
+  return s.substr(0, s.indexOf(' '));
 };
 
-const command_who = () => {
+const command_who = (callback) => {
   const user = child.spawn('whoami');
-  let arr = [];
-  user.stdout.on('data', (d) => arr.push(d));
+  let str_arr = [];
+  user.stdout.on('data', d => str_arr.push(d));
   user.stdout.on('end', () => {
-    arr = Buffer.concat(arr).toString();
-    let n = 0, user_name = '';
-    do{
-      user_name += arr[n++];
-    }while(arr[n] !== '\n')
-    console.log(user_name);
+    str_arr = Buffer.concat(str_arr).toString();
+    let user_name = str_arr.substr(0, str_arr.indexOf('\n'));
+    return callback(user_name);
   });
  }
-command_who();
 
-const command_ps = () => {
+ const command_ps = () => {
    const ps = child.spawn('ps',['aux']);
-   let arr = [];
-   ps.stdout.on('data', (d) => arr.push(d));
+   let str_arr = [];
+   ps.stdout.on('data', d => str_arr.push(d));
    ps.stdout.on('end', () => {
-     arr = Buffer.concat(arr).toString();
-     let arr_row = [], i_row = 0;
-     let str_obj = [];
-     do{
-       str_obj = get_row_obj(i_row, arr);
-       //here need to compare with the result of whoami not with 'lilo'
-       //str_obj[1] is the first word of the row,
-       // str_obj[0] is first index of each row
-       if(str_obj[1] !== 'lilo' && str_obj[1] !== 'root')
-          arr_row.push(str_obj[2]);
-       i_row = str_obj[0];
-     }while(i_row < arr.length);
+     str_arr = Buffer.concat(str_arr).toString().split('\n');
+     command_who(user => {
+       let filt_arr = [];
 
-     for(const a of arr_row){
-       console.log(`${a}\n`);
-     }
+       filt_arr = str_arr.filter((str) => {
+         let f_word = str.substr(0, str.indexOf(' '));
+         return ((user !== f_word) && (f_word !== 'root'));
+       });
+       console.log(filt_arr);
+     })
    });
  }
  command_ps();
+
+
+/*
+const ps_logic = (result, hhh) => {
+  console.log(result);
+}
+
+const command_ps = (hhh) => {
+
+  command_who(result => {
+    hhh
+  });
+};
+command_ps();*/
+
+
+
+    // console.log(str_arr);
+
+     //if(!command_who(f_word)) console.log('done');
+
+     //console.log(str_arr);
+    //  for (let a of str_arr){
+        //f_word = str_arr.substr(0, str_arr.indexOf(' '));
+        //str = str.substr(0, str.indexOf(' '))
+
+        //el = a.replace(/\s+/g,' ').trim();
+        //console.log(el);
+    //  }
