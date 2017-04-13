@@ -15,9 +15,14 @@ const calling = (el, cb) =>{
   }
 }
 
-const get_first_word = (s) => {
-  return s.substr(0, s.indexOf(' '));
-};
+const arr_rows = (arr) => {
+  let filt_arr = [];
+  for (let str of arr){
+    str = str.replace(/\s+/g,' ').trim().split(' ');
+    filt_arr.push(str);
+  }
+  return filt_arr;
+}
 
 const command_who = (callback) => {
   const user = child.spawn('whoami');
@@ -39,41 +44,25 @@ const command_who = (callback) => {
      command_who(user => {
        let filt_arr = [];
 
-       filt_arr = str_arr.filter((str) => {
-         let f_word = str.substr(0, str.indexOf(' '));
+       filt_arr = str_arr.filter(str => {
+         const f_word = str.substr(0, str.indexOf(' '));
          return ((user !== f_word) && (f_word !== 'root'));
        });
-       console.log(filt_arr);
+
+       filt_arr = calling(filt_arr, arr_rows);
+
+       const i_pName = filt_arr[0].findIndex(s => s === 'USER');
+       const i_pid = filt_arr[0].findIndex(s => s === 'PID');
+       const i_command = filt_arr[0].findIndex(s => s === 'COMMAND');
+       let last_arr = [];
+       for (let row of filt_arr){
+         row = row.filter(e => (row.indexOf(e) == i_pName) ||
+                               (row.indexOf(e) == i_pid) ||
+                              (row.indexOf(e) == i_command));
+         last_arr.push(row);
+       }
+       console.log(last_arr);
      })
    });
  }
  command_ps();
-
-
-/*
-const ps_logic = (result, hhh) => {
-  console.log(result);
-}
-
-const command_ps = (hhh) => {
-
-  command_who(result => {
-    hhh
-  });
-};
-command_ps();*/
-
-
-
-    // console.log(str_arr);
-
-     //if(!command_who(f_word)) console.log('done');
-
-     //console.log(str_arr);
-    //  for (let a of str_arr){
-        //f_word = str_arr.substr(0, str_arr.indexOf(' '));
-        //str = str.substr(0, str.indexOf(' '))
-
-        //el = a.replace(/\s+/g,' ').trim();
-        //console.log(el);
-    //  }
