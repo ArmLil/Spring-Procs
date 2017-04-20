@@ -6,33 +6,17 @@ const child = require('child_process');
 
 const spring = express();
 
-/////////////////////////////////////////////////////////////////////
-
-var sqlite3     = require('sqlite3').verbose();
-var fs          = require('fs');
-var dbFile = './database.db';
-var dbExists = fs.existsSync(dbFile);
-if(!dbExists)
-{
-    fs.openSync(dbFile, 'w');
-}
-
-var db = new sqlite3.Database(dbFile);
-if(!dbExists)
-{
-  db.run('CREATE TABLE my_table (' +
-  '`id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,' +
-  '`user` TEXT,' +
-  ' `pid` INTEGER, ' +
-  ' `command` TEXT)');
-}
-
-
-////////////////////////////////////////////////////////////////////
-
-
 spring.post('/check-procs', (req, res) => {
 })
+/////////////////////////////////////////////////////////////////////
+
+const sqlite3     = require('sqlite3').verbose();
+const fs          = require('fs');
+const dbFile = './database.db';
+const dbExists = fs.existsSync(dbFile);
+if(!dbExists)  fs.openSync(dbFile, 'w');
+
+////////////////////////////////////////////////////////////////////
 
 const calling = (el, cb) =>{
   if (typeof cb === "function"){
@@ -73,7 +57,7 @@ const command_who = (callback) => {
          const f_word = str.substr(0, str.indexOf(' '));
          return ((user !== f_word) && (f_word !== 'root'));
        });
-
+       //console.log(filt_arr)
        filt_arr = calling(filt_arr, arr_rows);
 
        //console.log(filt_arr);
@@ -92,25 +76,31 @@ const command_who = (callback) => {
        //console.log(last_arr);
        //const json_array = JSON.stringify(last_arr);
        //console.log(json_array);
-       //let row of last_arr
 ///////////////////////////////////////////////////////////////////////////////////////
-// Insert some data using a statement:
 
-var statement = db.prepare('INSERT INTO `my_table` (`user`, `pid`, `command`) ' +
-'VALUES (?, ?, ?)');
-       for (let row = 0; row < last_arr.length; ++row){
-         statement.run(last_arr[row][0], last_arr[row][1], last_arr[row][2]);
-        /*   last_arr[row][0] = {'USER' : last_arr[row][0]};
-           last_arr[row][1] = {'PID' : last_arr[row][1]};
-           last_arr[row][2] = {'Command' : last_arr[row][2]};*/
-         }
-        //console.log(last_arr);
-        statement.finalize();
-        // Close the database:
-        db.close();
-        db.each("SELECT * FROM my_table", (err, row) => {
-          console.log(row);
-});
+        const db = new sqlite3.Database(dbFile);
+        db.serialize(() => {
+
+          db.run('CREATE TABLE if not exists my_table (' +
+          '`id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,' +
+          '`user` TEXT,' +
+          '`pid` INTEGER,' +
+          '`command` TEXT)');
+          // Insert some data using a statement:
+
+          const statement = db.prepare('INSERT INTO `my_table` (`user`, `pid`, `command`) ' +
+          'VALUES (?, ?, ?)');
+             for (let row = 0; row < last_arr.length; ++row){
+               statement.run(last_arr[row][0], last_arr[row][1], last_arr[row][2]);
+               }
+
+              statement.finalize();
+              db.each("SELECT * FROM my_table", (err, row) => {
+                console.log(row);
+            });
+              // Close the database:
+              db.close();
+        });
 ////////////////////////////////////////////////////////////////////////////////////////////
 
         return cb(last_arr);
