@@ -1,19 +1,25 @@
 'use strict'
 
 const express = require('express');
+
 const sqlite = require('sqlite');
+
 const child = require('child_process');
 
 const spring = express();
 
-spring.post('/check-procs', (req, res) => {
-})
-/////////////////////////////////////////////////////////////////////
+const bodyParser = require('body-parser');
+
+spring.use(bodyParser.json());
 
 const sqlite3     = require('sqlite3').verbose();
+
 const fs          = require('fs');
+
 const dbFile = './database.db';
+
 const dbExists = fs.existsSync(dbFile);
+
 if(!dbExists)  fs.openSync(dbFile, 'w');
 
 ////////////////////////////////////////////////////////////////////
@@ -34,6 +40,8 @@ const arr_rows = (arr) => {
 }
 
 const command_who = (callback) => {
+  spring.post('/check-procs', (req, res) => {
+  })
   const user = child.spawn('whoami');
   let str_arr = [];
   user.stdout.on('data', d => str_arr.push(d));
@@ -44,7 +52,7 @@ const command_who = (callback) => {
   });
  }
 
- const command_ps = (cb) => {
+ const command_ps = () => {
    const ps = child.spawn('ps',['aux']);
    let str_arr = [];
    ps.stdout.on('data', d => str_arr.push(d));
@@ -66,9 +74,9 @@ const command_who = (callback) => {
        const i_command = filt_arr[0].findIndex(s => s === 'COMMAND');
        const last_arr = [];
        for (let row of filt_arr){
-         row = row.filter(e => (row.indexOf(e) == i_pName) ||
-                               (row.indexOf(e) == i_pid) ||
-                              (row.indexOf(e) == i_command));
+         row = row.filter(e => (row.indexOf(e) === i_pName) ||
+                               (row.indexOf(e) === i_pid) ||
+                              (row.indexOf(e) === i_command));
         last_arr.push(row);
        }
        last_arr.pop();
@@ -82,29 +90,34 @@ const command_who = (callback) => {
         db.serialize(() => {
 
           db.run('CREATE TABLE if not exists my_table (' +
-          '`id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,' +
-          '`user` TEXT,' +
-          '`pid` INTEGER,' +
-          '`command` TEXT)');
+          '`row_id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,' +
+          '`result`)');
           // Insert some data using a statement:
 
-          const statement = db.prepare('INSERT INTO `my_table` (`user`, `pid`, `command`) ' +
-          'VALUES (?, ?, ?)');
+          const statement = db.prepare('INSERT INTO `my_table` (`result`) VALUES (?)');
              for (let row = 0; row < last_arr.length; ++row){
-               statement.run(last_arr[row][0], last_arr[row][1], last_arr[row][2]);
+                statement.run(`{USER: ${last_arr[row][0]},  PID: ${last_arr[row][1]},  COMMAND: ${last_arr[row][2]}}`);
                }
 
-              statement.finalize();
+               statement.finalize();
+
+               let arr = [];
               db.each("SELECT * FROM my_table", (err, row) => {
-                console.log(row);
-            });
+                //console.log(row);
+                arr.push(row);
+                });
+              spring.get('/', function(request, response) {
+                response.json(arr);
+              });
+
+              spring.listen(8080, function(){
+                console.log('Listening on port 8080');
+              });
               // Close the database:
               db.close();
         });
 ////////////////////////////////////////////////////////////////////////////////////////////
-
-        return cb(last_arr);
      })
    });
  }
- command_ps(e => console.log(e));
+command_ps();
