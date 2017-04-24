@@ -58,6 +58,7 @@ const command_who = (callback) => {
    ps.stdout.on('data', d => str_arr.push(d));
    ps.stdout.on('end', () => {
      str_arr = Buffer.concat(str_arr).toString().split('\n');
+
      command_who(user => {
        let filt_arr = [];
 
@@ -81,31 +82,32 @@ const command_who = (callback) => {
        }
        last_arr.pop();
        last_arr.shift();
-       //console.log(last_arr);
-       //const json_array = JSON.stringify(last_arr);
-       //console.log(json_array);
+
 ///////////////////////////////////////////////////////////////////////////////////////
 
         const db = new sqlite3.Database(dbFile);
+
         db.serialize(() => {
 
           db.run('CREATE TABLE if not exists my_table (' +
-          '`row_id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,' +
+          '`run_id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,' +
           '`result`)');
           // Insert some data using a statement:
-
+          let obj_arr = [];
           const statement = db.prepare('INSERT INTO `my_table` (`result`) VALUES (?)');
              for (let row = 0; row < last_arr.length; ++row){
-                statement.run(`{USER: ${last_arr[row][0]},  PID: ${last_arr[row][1]},  COMMAND: ${last_arr[row][2]}}`);
+               obj_arr.push(`
+{ROW: ${row +1}, USER: ${last_arr[row][0]}, PID: ${last_arr[row][1]}, COMMAND: ${last_arr[row][2]}}`);
                }
+               statement.run(`${obj_arr}`);
 
                statement.finalize();
 
-               let arr = [];
+              const arr = [];
               db.each("SELECT * FROM my_table", (err, row) => {
                 //console.log(row);
                 arr.push(row);
-                });
+              });
               spring.get('/', function(request, response) {
                 response.json(arr);
               });
@@ -117,7 +119,7 @@ const command_who = (callback) => {
               db.close();
         });
 ////////////////////////////////////////////////////////////////////////////////////////////
-     })
+     });
    });
  }
 command_ps();
