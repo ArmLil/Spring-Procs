@@ -1,34 +1,24 @@
 'use strict'
 
 const express = require('express');
-
-const sqlite = require('sqlite');
+const spring = express();
 
 const child = require('child_process');
 
-const spring = express();
-
 const bodyParser = require('body-parser');
-
 spring.use(bodyParser.json());
 
+const sqlite = require('sqlite');
 const sqlite3     = require('sqlite3').verbose();
 
 const fs          = require('fs');
-
 const dbFile = './database.db';
-
 const dbExists = fs.existsSync(dbFile);
 
 if(!dbExists)  fs.openSync(dbFile, 'w');
 
 ////////////////////////////////////////////////////////////////////
 
-const calling = (el, cb) =>{
-  if (typeof cb === "function"){
-    return cb(el);
-  }
-}
 
 const arr_rows = (arr) => {
   const filt_arr = [];
@@ -40,8 +30,7 @@ const arr_rows = (arr) => {
 }
 
 const command_who = (callback) => {
-  spring.post('/check-procs', (req, res) => {
-  })
+
   const user = child.spawn('whoami');
   let str_arr = [];
   user.stdout.on('data', d => str_arr.push(d));
@@ -53,6 +42,7 @@ const command_who = (callback) => {
  }
 
  const command_ps = () => {
+
    const ps = child.spawn('ps',['aux']);
    let str_arr = [];
    ps.stdout.on('data', d => str_arr.push(d));
@@ -67,7 +57,7 @@ const command_who = (callback) => {
          return ((user !== f_word) && (f_word !== 'root'));
        });
        //console.log(filt_arr)
-       filt_arr = calling(filt_arr, arr_rows);
+       filt_arr = arr_rows(filt_arr);
 
        //console.log(filt_arr);
        const i_pName = filt_arr[0].findIndex(s => s === 'USER');
