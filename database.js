@@ -10,13 +10,13 @@ const sqlite3     = require('sqlite3').verbose();
 const db = new sqlite3.Database(dbFile);
 
 
-exports.get_db = (last_arr) => {
+exports.get_db = async (last_arr) => {
   return new Promise((resolve, reject) => {
 
     db.serialize(() => {
       db.run('CREATE TABLE if not exists my_table (' +
       '`run_id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,' +
-      '`result`)');
+      '`result` TEXT NOT NULL)');
       // Insert some data using a statement:
       let obj_arr = [];
       const statement = db.prepare('INSERT INTO `my_table` (`result`) VALUES (?)');
