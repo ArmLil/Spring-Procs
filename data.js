@@ -2,9 +2,9 @@
 
 const child = require('child_process');
 
- module.exports.command_who = () => {
+ module.exports.command_who = async () => {
     const user = child.spawn('whoami');
-    return new Promise((resolve, reject) => {
+     return new Promise((resolve, reject) => {
       const str_arr = [];
         user.stdout.on('data', d => {
           if(typeof user == 'undefined') reject(new Error('Opps.')) //this part does not work
@@ -25,10 +25,10 @@ const child = require('child_process');
      });
   };
 
- module.exports.command_ps_aux = (user) => {
+  module.exports.command_ps_aux = async (user) => {
    const ps = child.spawn('ps',['aux']);
 
-   return new Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
       const str_arr = [];
       ps.stdout.on('data', d => {
         str_arr.push(d);
@@ -50,7 +50,7 @@ const child = require('child_process');
     })//here we can catch the errors
   };
 
-  module.exports.arr_rows = (arr) => {
+  module.exports.arr_rows = async (arr) => {
     const filt_arr = [];
 
     for (let str of arr){
