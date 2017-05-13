@@ -3,7 +3,7 @@
 const sqlite3     = require('sqlite3').verbose();
 const db = new sqlite3.Database('database.db');
 
-exports.get_db = (last_arr) => {
+exports.get_db = async (last_arr) => {
   return new Promise((resolve, reject) => {
 
     db.serialize(() => {
