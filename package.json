@@ -1,10 +1,12 @@
 {
   "name": "spring-procs",
   "version": "1.0.0",
-  "description": "backend project with Edgar",
   "main": "index.js",
+  "description": "backend project with Edgar",
+
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "create-db": "cat ./db.sql | sqlite3 database.db"
   },
   "repository": {
     "type": "git",
