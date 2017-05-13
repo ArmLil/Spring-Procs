@@ -1,0 +1,5 @@
+CREATE TABLE if not exists my_table (
+    run_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
+
+    result TEXT NOT NULL
+);
