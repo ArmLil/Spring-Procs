@@ -6,7 +6,8 @@
 
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "create-db": "cat ./db.sql | sqlite3 database.db"
+    "create-db": "cat ./db.sql | sqlite3 database.db",
+    "start": "node index.js"
   },
   "repository": {
     "type": "git",
