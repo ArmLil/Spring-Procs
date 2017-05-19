@@ -7,7 +7,7 @@ const child = require('child_process');
      return new Promise((resolve, reject) => {
       const str_arr = [];
         user.stdout.on('data', d => {
-          if(typeof user === 'undefined') reject(new Error('Opps.')) //this part does not work
+          if(typeof user === 'undefined') reject(new Error('Opps.')) 
           else {
             str_arr.push(d);
             resolve(str_arr);
