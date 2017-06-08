@@ -9,7 +9,8 @@ module.exports.command_who = async() => {
 					if (err) {
 						return reject(err);
 					}
-					resolve(stdout);
+          const user = stdout.substr(0, stdout.indexOf('\n'));
+					resolve(user);
 				});
 			});
 		}
@@ -62,7 +63,7 @@ module.exports.command_who = async() => {
 					});
 				}) //here we can catch the errors
 		};
-    
+
 
 		module.exports.arr_rows = async(arr) => {
 			const filt_arr = [];
