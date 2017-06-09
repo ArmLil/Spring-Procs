@@ -9,7 +9,8 @@ module.exports.command_who = async() => {
 					if (err) {
 						return reject(err);
 					}
-          const user = stdout.substr(0, stdout.indexOf('\n'));
+          //const user = stdout.substr(0, stdout.indexOf('\n'));
+					const user = stdout.trim();
 					resolve(user);
 				});
 			});
