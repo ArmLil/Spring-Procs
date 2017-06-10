@@ -4,3 +4,11 @@ This backend project is to get the result from shell via Child Processes 'ps aux
 
 1. master - it is implemented with callbacks...
 2. refactor - it uses promises, async, await ...
+
+npm run create-db
+npm run start
+
+http://localhost:8080/ (in Firefox the JSON format is more readable)
+
+or
+curl localhost:8080
