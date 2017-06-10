@@ -1,21 +1,21 @@
 'use strict'
 
-const data = require( './data' );
-const database = require( './database' );
-const server = require( './server' );
+const data = require('./data');
+const database = require('./database');
+const server = require('./server');
 
 ////////////////////////////////////////////////////////////////////
 
 const main = async() => {
-	try {
-		const val_command_who = await data.command_who();
-		const val_command_ps = await data.command_ps_aux( val_command_who );
-		const val_array_rows = await data.arr_rows( val_command_ps );
-		const val_db = await database.get_db( val_array_rows );
-		const val_server = await server.get_server( val_db );
-	} catch ( e ) {
-		console.error( 'We have an error.', e );
-	}
+  try {
+    const val_command_who = await data.command_who();
+    const val_command_ps = await data.command_ps_aux(val_command_who);
+    const val_array_rows = await data.arr_rows(val_command_ps);
+    const val_db = await database.get_db(val_array_rows);
+    const val_server = await server.get_server(val_db);
+  } catch (e) {
+    console.error('We have an error.', e);
+  }
 }
 main();
 

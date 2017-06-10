@@ -3,7 +3,7 @@
 const child = require('child_process');
 const exec = require('child_process').exec;
 
-module.exports.command_who = async() => {
+module.exports.command_who = () => {
 		return new Promise((resolve, reject) => {
 				exec('whoami', (err, stdout, stderr) => {
 					if (err) {
@@ -40,7 +40,7 @@ module.exports.command_who = async() => {
 		};
 */
 
-		module.exports.command_ps_aux = async(user) => {
+		module.exports.command_ps_aux = (user) => {
 			const ps = child.spawn('ps', ['aux']);
 
 			return new Promise((resolve, reject) => {
@@ -66,7 +66,7 @@ module.exports.command_who = async() => {
 		};
 
 
-		module.exports.arr_rows = async(arr) => {
+		module.exports.arr_rows = (arr) => {
 			const filt_arr = [];
 
 			for (let str of arr) {
